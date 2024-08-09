@@ -1,0 +1,544 @@
+<html><head><base href="https://nueva-italia-mich-programacion.com/">
+<meta charset="UTF-8">
+<title>NUEVA ITALIA MICH Programación Visual con Bloques C++</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+  }
+  @keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .container {
+    display: flex;
+    flex-direction: column;
+  }
+  .top-section {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .block-container, .workspace-container, .compiler-container {
+    width: 31%;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  .code-container {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  .block {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: move;
+    position: relative;
+  }
+  .block-for-start { background-color: #FF5722; color: white; }
+  .block-for-end { background-color: #E64A19; color: white; }
+  .block-while-start { background-color: #3F51B5; color: white; }
+  .block-while-end { background-color: #303F9F; color: white; }
+  .block-if-start { background-color: #4CAF50; color: white; }
+  .block-if-end { background-color: #388E3C; color: white; }
+  .block-else-start { background-color: #8BC34A; color: white; }
+  .block-else-end { background-color: #689F38; color: white; }
+  .block-variable { background-color: #FFC107; }
+  .block-function-start { background-color: #9C27B0; color: white; }
+  .block-function-end { background-color: #7B1FA2; color: white; }
+  .block-print { background-color: #00BCD4; color: white; }
+  .block-length { background-color: #795548; color: white; }
+  .block-math { background-color: #FF9800; color: white; }
+  .block-call-function { background-color: #607D8B; color: white; }
+  .block-return { background-color: #E91E63; color: white; }
+  #workspace, #global-workspace {
+    min-height: 300px;
+    border: 2px dashed #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+  #codeOutput, #compilerOutput {
+    background-color: rgba(248, 248, 248, 0.8);
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    white-space: pre-wrap;
+    font-family: monospace;
+    height: 300px;
+    overflow-y: auto;
+  }
+  .block-options {
+    margin-top: 5px;
+  }
+  .block-options input, .block-options select {
+    width: 100%;
+    padding: 5px;
+    margin-top: 5px;
+  }
+  .nested-block {
+    margin-left: 20px;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+  }
+  .remove-block {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+    color: white;
+    background-color: rgba(0,0,0,0.3);
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    border-radius: 50%;
+  }
+  button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+  }
+  button:hover {
+    background-color: #45a049;
+  }
+  h1, h2 {
+    color: #333;
+    text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+  }
+  .toggle-options {
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: underline;
+    margin-bottom: 5px;
+    display: inline-block;
+  }
+  .hidden {
+    display: none;
+  }
+</style>
+</head>
+<body>
+<h1>NUEVA ITALIA MICH Programación Visual con Bloques C++</h1>
+<div class="container">
+  <div class="top-section">
+    <div class="block-container">
+      <h2>Bloques disponibles</h2>
+      <div class="block block-for-start" draggable="true" ondragstart="drag(event)" id="for-start">Inicio de bucle For</div>
+      <div class="block block-for-end" draggable="true" ondragstart="drag(event)" id="for-end">Fin de bucle For</div>
+      <div class="block block-while-start" draggable="true" ondragstart="drag(event)" id="while-start">Inicio de bucle While</div>
+      <div class="block block-while-end" draggable="true" ondragstart="drag(event)" id="while-end">Fin de bucle While</div>
+      <div class="block block-if-start" draggable="true" ondragstart="drag(event)" id="if-start">Inicio de If</div>
+      <div class="block block-if-end" draggable="true" ondragstart="drag(event)" id="if-end">Fin de If</div>
+      <div class="block block-else-start" draggable="true" ondragstart="drag(event)" id="else-start">Inicio de Else</div>
+      <div class="block block-else-end" draggable="true" ondragstart="drag(event)" id="else-end">Fin de Else</div>
+      <div class="block block-variable" draggable="true" ondragstart="drag(event)" id="variable">Declarar variable</div>
+      <div class="block block-function-start" draggable="true" ondragstart="drag(event)" id="function-start">Inicio de Función</div>
+      <div class="block block-function-end" draggable="true" ondragstart="drag(event)" id="function-end">Fin de Función</div>
+      <div class="block block-print" draggable="true" ondragstart="drag(event)" id="print">Imprimir</div>
+      <div class="block block-length" draggable="true" ondragstart="drag(event)" id="length">Longitud de string</div>
+      <div class="block block-math" draggable="true" ondragstart="drag(event)" id="math">Operación matemática</div>
+      <div class="block block-call-function" draggable="true" ondragstart="drag(event)" id="call-function">Llamar función</div>
+      <div class="block block-return" draggable="true" ondragstart="drag(event)" id="return">Función return</div>
+   
+         <div class="block block-math" draggable="true" ondragstart="drag(event)" id="buscarCadena">buscar cadena</div>
+      
+      
+      
+      
+      
+    </div>
+    
+    <div class="workspace-container">
+      <h2>Área de trabajo global (fuera de main)</h2>
+      <div id="global-workspace" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+      <h2>Área de trabajo (dentro de main)</h2>
+      <div id="workspace" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+    </div>
+
+    <div class="compiler-container">
+      <h2>Compilador Online</h2>
+      <button onclick="compileAndRun()">Compilar y Ejecutar</button>
+      <pre id="compilerOutput"></pre>
+    </div>
+  </div>
+  
+  <div class="code-container">
+    <h2>Código C++ generado</h2>
+    <pre id="codeOutput"></pre>
+    <button onclick="generateCode()">Generar Código</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script>
+let blockCounter = 0;
+
+function drag(ev) {
+  ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function allowDrop(ev) {
+  ev.preventDefault();
+}
+
+function createBlockElement(data) {
+  const nodeCopy = document.getElementById(data).cloneNode(true);
+  nodeCopy.id = data + blockCounter++;
+  
+  const removeButton = document.createElement('span');
+  removeButton.className = 'remove-block';
+  removeButton.innerHTML = '×';
+  removeButton.onclick = function(event) { 
+    event.stopPropagation();
+    removeBlock(this.parentNode); 
+  };
+  nodeCopy.appendChild(removeButton);
+  
+  const toggleOptions = document.createElement('span');
+  toggleOptions.className = 'toggle-options';
+  toggleOptions.textContent = 'Mostrar/Ocultar opciones';
+  toggleOptions.onclick = function(event) {
+    event.stopPropagation();
+    const options = this.nextElementSibling;
+    options.classList.toggle('hidden');
+  };
+  nodeCopy.appendChild(toggleOptions);
+  
+  const optionsDiv = document.createElement('div');
+  optionsDiv.className = 'block-options hidden';
+  
+  switch(data) {
+    case 'for-start':
+      optionsDiv.innerHTML = '<input type="text" placeholder="Inicialización"><input type="text" placeholder="Condición"><input type="text" placeholder="Incremento">';
+      break;
+    case 'while-start':
+      optionsDiv.innerHTML = '<input type="text" placeholder="Condición">';
+      break;
+      
+    case 'if-start':
+      optionsDiv.innerHTML = '<input type="text" placeholder="Condición">';
+      break;
+    
+      
+        
+    case 'buscarCadena':
+      optionsDiv.innerHTML = '<input type="text" placeholder="variable fuente"><input type="text" placeholder="a buscar"><input type="text" placeholder="variable aguardar resultado">';
+      break;
+      
+      
+                
+              
+      
+      
+    case 'variable':
+      optionsDiv.innerHTML = '<input type="text" placeholder="Nombre de la variable"><select><option value="int">int</option><option value="float">float</option><option value="double">double</option><option value="char">char</option><option value="string">string</option></select><input type="text" placeholder="Valor de la variable">';
+      break;
+    case 'function-start':
+      optionsDiv.innerHTML = '<input type="text" placeholder="Nombre de la función"><input type="text" placeholder="Tipo de retorno"><input type="text" placeholder="Parámetros (ej: int a, float b)">';
+      break;
+    case 'print':
+      optionsDiv.innerHTML = '<select><option value="text">Texto</option><option value="variable">Variable</option></select><input type="text" placeholder="Texto o nombre de variable">';
+      break;
+    case 'length':
+      optionsDiv.innerHTML = '<input type="text" placeholder="Nombre de la variable string"><input type="text" placeholder="Nombre de la variable para almacenar la longitud (int)">';
+      break;
+    case 'math':
+      optionsDiv.innerHTML = '<select><option value="add">Suma</option><option value="subtract">Resta</option><option value="multiply">Multiplicación</option><option value="divide">División</option></select>' +
+        '<select class="operand-type" onchange="toggleOperandInput(this)"><option value="variable">Variable</option><option value="number">Número</option></select>' +
+        '<input type="text" placeholder="Operando 1 (variable o número)">' +
+        '<select class="operand-type" onchange="toggleOperandInput(this)"><option value="variable">Variable</option><option value="number">Número</option></select>' +
+        '<input type="text" placeholder="Operando 2 (variable o número)">' +
+        '<input type="text" placeholder="Variable resultado">';
+      break;
+    case 'call-function':
+      optionsDiv.innerHTML = '<input type="text" placeholder="Nombre de la función">' +
+        '<input type="text" placeholder="Argumentos (ej: a, b, 5)">' +
+        '<select class="save-result"><option value="none">No guardar resultado</option><option value="save">Guardar resultado</option></select>' +
+        '<select class="result-type" style="display:none;"><option value="int">int</option><option value="float">float</option><option value="double">double</option><option value="char">char</option><option value="string">string</option><option value="auto">auto</option></select>' +
+        '<input type="text" placeholder="Variable para guardar resultado" style="display:none;">';
+      optionsDiv.querySelector('.save-result').onchange = function() {
+        const resultTypeSelect = this.nextElementSibling;
+        const resultInput = resultTypeSelect.nextElementSibling;
+        if (this.value === 'save') {
+          resultTypeSelect.style.display = 'block';
+          resultInput.style.display = 'block';
+        } else {
+          resultTypeSelect.style.display = 'none';
+          resultInput.style.display = 'none';
+        }
+      };
+      break;
+    case 'return':
+      optionsDiv.innerHTML = '<input type="text" placeholder="Variable a retornar">';
+      break;
+  }
+  
+  nodeCopy.appendChild(optionsDiv);
+  
+  return nodeCopy;
+}
+
+function toggleOperandInput(select) {
+  const input = select.nextElementSibling;
+  if (select.value === 'number') {
+    input.type = 'number';
+    input.placeholder = 'Ingrese un número';
+  } else {
+    input.type = 'text';
+    input.placeholder = 'Nombre de la variable';
+  }
+}
+
+function removeBlock(block) {
+  block.remove();
+}
+
+function drop(ev) {
+  ev.preventDefault();
+  var data = ev.dataTransfer.getData("text");
+  var nodeCopy = createBlockElement(data);
+  
+  if (ev.target.className.includes("block") && !ev.target.className.includes("nested-block")) {
+    const nestedContainer = document.createElement("div");
+    nestedContainer.className = "nested-block";
+    ev.target.parentNode.insertBefore(nestedContainer, ev.target.nextSibling);
+    nestedContainer.appendChild(nodeCopy);
+  } else if (ev.target.className.includes("nested-block")) {
+    ev.target.appendChild(nodeCopy);
+  } else {
+    ev.target.appendChild(nodeCopy);
+  }
+}
+
+function generateCode() {
+  const globalWorkspace = document.getElementById('global-workspace');
+  const mainWorkspace = document.getElementById('workspace');
+  let code = "#include <iostream>\n#include <string>\n\n";
+  code += "using std::string;  // Importar 'string' del espacio de nombres 'std'\n";
+  code += "using std::cout;\n";
+  code += "using std::endl;\n\n";
+  
+  // Generate code for global workspace (outside main)
+  code += generateBlockCode(globalWorkspace, 0);
+  
+  // Generate main function
+  code += "int main() {\n";
+  code += generateBlockCode(mainWorkspace, 1);
+  code += "    return 0;\n}\n";
+  
+  document.getElementById('codeOutput').textContent = code;
+}
+
+function generateBlockCode(container, indentLevel) {
+  let code = "";
+  const indent = "    ".repeat(indentLevel);
+  const blocks = Array.from(container.children);
+  const blockStack = [];
+  
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i];
+    const baseId = block.id.replace(/\d+$/, '');
+    const options = block.querySelector('.block-options');
+    
+    switch(baseId) {
+      case 'for-start':
+        const forInit = options ? options.querySelectorAll('input')[0].value : "int i = 0";
+        const forCond = options ? options.querySelectorAll('input')[1].value : "i < 5";
+        const forIncr = options ? options.querySelectorAll('input')[2].value : "i++";
+        code += `${indent}for (${forInit}; ${forCond}; ${forIncr}) {\n`;
+        blockStack.push('for');
+        break;
+      case 'for-end':
+        if (blockStack.pop() === 'for') {
+          code += `${indent}}\n`;
+        }
+        break;
+      case 'while-start':
+        const whileCond = options ? options.querySelector('input').value : "condition";
+        code += `${indent}while (${whileCond}) {\n`;
+        blockStack.push('while');
+        break;
+      case 'while-end':
+        if (blockStack.pop() === 'while') {
+          code += `${indent}}\n`;
+        }
+        break;
+      case 'if-start':
+        const ifCond = options ? options.querySelector('input').value : "condition";
+        code += `${indent}if (${ifCond}) {\n`;
+        blockStack.push('if');
+        break;
+      case 'if-end':
+        if (blockStack.pop() === 'if') {
+          code += `${indent}}\n`;
+        }
+        break;
+      case 'else-start':
+        code += `${indent}else {\n`;
+        blockStack.push('else');
+        break;
+      case 'else-end':
+        if (blockStack.pop() === 'else') {
+          code += `${indent}}\n`;
+        }
+        break;
+      case 'variable':
+        const varName = options ? options.querySelector('input').value : "myVariable";
+        const varType = options ? options.querySelector('select').value : "int";
+        const varValue = options ? options.querySelectorAll('input')[1].value : "";
+        if (varValue) {
+          if (varType === "string") {
+            code += `${indent}${varType} ${varName} = "${varValue}";\n`;
+          } else {
+            code += `${indent}${varType} ${varName} = ${varValue};\n`;
+          }
+        } else {
+          code += `${indent}${varType} ${varName};\n`;
+        }
+        break;
+      case 'function-start':
+        const funcName = options ? options.querySelectorAll('input')[0].value : "myFunction";
+        const returnType = options ? options.querySelectorAll('input')[1].value : "void";
+        const params = options ? options.querySelectorAll('input')[2].value : "";
+        code += `${indent}${returnType} ${funcName}(${params}) {\n`;
+        blockStack.push('function');
+        break;
+      case 'function-end':
+        if (blockStack.pop() === 'function') {
+          code += `${indent}}\n\n`;
+        }
+        break;
+      case 'print':
+        const printType = options ? options.querySelector('select').value : "text";
+        const printValue = options ? options.querySelector('input').value : "";
+        if (printType === "text") {
+          code += `${indent}cout << "${printValue}" << endl;\n`;
+        } else {
+          code += `${indent}cout << ${printValue} << endl;\n`;
+        }
+        break;
+        
+        
+        case 'buscarCadena':
+    // Usa querySelectorAll para seleccionar múltiples inputs
+    const inputs = options ? options.querySelectorAll('input') : [];
+    
+    // Asegúrate de que hay suficientes inputs para evitar errores
+    const fuenteAbuscar = inputs.length > 0 ? inputs[0].value : "text";
+    const cadenaAbuscar = inputs.length > 1 ? inputs[1].value : "text";
+    const cadenaResultado = inputs.length > 2 ? inputs[2].value : "text";
+    
+    // Concatena el código usando template strings
+    code += `size_t ${cadenaResultado} = ${fuenteAbuscar}.find("${cadenaAbuscar}");\n`;
+    break;
+        
+        
+        
+        
+        
+        
+        
+        
+      case 'length':
+        const stringVar = options ? options.querySelectorAll('input')[0].value : "myString";
+        const lengthVar = options ? options.querySelectorAll('input')[1].value : "lengthInt";
+        code += `${indent}int ${lengthVar} = ${stringVar}.length();\n`;
+        break;
+      case 'math':
+        const operation = options ? options.querySelector('select').value : "add";
+        const operand1Type = options ? options.querySelectorAll('select')[1].value : "variable";
+        const operand1 = options ? options.querySelectorAll('input')[0].value : "a";
+        const operand2Type = options ? options.querySelectorAll('select')[2].value : "variable";
+        const operand2 = options ? options.querySelectorAll('input')[1].value : "b";
+        const resultVar = options ? options.querySelectorAll('input')[2].value : "result";
+        let operatorSymbol;
+        switch (operation) {
+          case 'add': operatorSymbol = '+'; break;
+          case 'subtract': operatorSymbol = '-'; break;
+          case 'multiply': operatorSymbol = '*'; break;
+          case 'divide': operatorSymbol = '/'; break;
+        }
+        const op1 = operand1Type === "number" ? operand1 : operand1;
+        const op2 = operand2Type === "number" ? operand2 : operand2;
+        code += `${indent}double ${resultVar} = ${op1} ${operatorSymbol} ${op2};\n`;
+        break;
+      case 'call-function':
+        const calledFuncName = options ? options.querySelectorAll('input')[0].value : "myFunction";
+        const calledFuncArgs = options ? options.querySelectorAll('input')[1].value : "";
+        const saveResult = options ? options.querySelector('.save-result').value : "none";
+        const resultType = options ? options.querySelector('.result-type').value : "auto";
+        const resultVarName = options ? options.querySelectorAll('input')[2].value : "";
+        
+        if (saveResult === "save" && resultVarName) {
+          code += `${indent}${resultType} ${resultVarName} = ${calledFuncName}(${calledFuncArgs});\n`;
+        } else {
+          code += `${indent}${calledFuncName}(${calledFuncArgs});\n`;
+        }
+        break;
+      case 'return':
+        const returnVar = options ? options.querySelector('input').value : "variable";
+        code += `${indent}return ${returnVar};\n`;
+        break;
+    }
+    
+    if (block.nextElementSibling && block.nextElementSibling.className === "nested-block") {
+      code += generateBlockCode(block.nextElementSibling, indentLevel + 1);
+    }
+  }
+  
+  // Close any remaining open blocks
+  while (blockStack.length > 0) {
+    const blockType = blockStack.pop();
+    code += `${indent}}\n`;
+  }
+  
+  return code;
+}
+
+async function compileAndRun() {
+  const code = document.getElementById('codeOutput').textContent;
+  const compilerOutput = document.getElementById('compilerOutput');
+  compilerOutput.textContent = 'Compilando y ejecutando...';
+
+  try {
+    const response = await axios.post('https://wandbox.org/api/compile.json', {
+      code: code,
+      compiler: 'gcc-head',
+      options: 'c++17,cpp-no-pedantic,cpp-no-warning',
+      save: false,
+      stdin: ''
+    });
+
+    if (response.data.status === "0") {
+      compilerOutput.textContent = "Compilación exitosa. Salida del programa:\n\n" + response.data.program_output;
+    } else {
+      compilerOutput.textContent = "Error de compilación:\n\n" + response.data.compiler_error;
+    }
+  } catch (error) {
+    compilerOutput.textContent = 'Error al compilar: ' + error.message;
+  }
+}
+</script>
+
+</body></html>
