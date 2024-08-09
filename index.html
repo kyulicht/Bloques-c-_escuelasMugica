@@ -1,6 +1,6 @@
 <html><head><base href="https://nueva-italia-mich-programacion.com/">
 <meta charset="UTF-8">
-<title>NUEVA ITALIA MICH Programación Visual con Bloques C++</title>
+<title>CBTA NUEVA ITALIA C++ CON BLOQUES</title>
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -139,7 +139,7 @@
 </style>
 </head>
 <body>
-<h1>NUEVA ITALIA MICH Programación Visual con Bloques C++</h1>
+<h1>CBTA Nueva Italia Programación Visual con Bloques C++</h1>
 <div class="container">
   <div class="top-section">
     <div class="block-container">
@@ -169,8 +169,10 @@
    
           <div class="block block-math" draggable="true" ondragstart="drag(event)" id="inputA">input usuario</div>      
         
-   
-   
+          <div class="block block-math" draggable="true" ondragstart="drag(event)" id="funcionBinarioAbrir">Agregar Funcion intAbinario</div>      
+
+             <div class="block block-math" draggable="true" ondragstart="drag(event)" id="funcionBinariollamada">llamar funcion intAbinario</div>      
+
    
    
    
@@ -268,7 +270,13 @@ function createBlockElement(data) {
       break;  
    
    
+     case 'funcionBinarioAbrir':
+      optionsDiv.innerHTML = ' ';
+      break;  
    
+        case 'funcionBinariollamada':
+      optionsDiv.innerHTML = '<input type="text" placeholder="int variable input a convertir"><input type="text" placeholder="nombre de variable con el resultado">';
+      break;  
    
    
    
@@ -477,6 +485,76 @@ function generateBlockCode(container, indentLevel) {
     // Concatena el código usando template strings
     code += `size_t ${cadenaResultado} = ${fuenteAbuscar}.find("${cadenaAbuscar}");\n`;
     break;
+
+
+
+
+
+    case 'funcionBinarioAbrir':
+    // Usa querySelectorAll para seleccionar múltiples inputs
+    const funcionBinarioAbrir = options ? options.querySelectorAll('input') : [];
+    
+    // Asegúrate de que hay suficientes inputs para evitar errores
+    
+    // Concatena el código usando template strings
+    code += `
+string convertirABinario(int numero) {
+    string binario = "";
+    while (numero > 0) {
+        binario = std::to_string(numero % 2) + binario;
+        numero /= 2;
+    }
+    return binario == "" ? "0" : binario;
+}
+
+    \n`;
+    break;
+        
+
+
+
+
+    case 'funcionBinariollamada':
+    // Usa querySelectorAll para seleccionar múltiples inputs
+    const funcionBinariollamada = options ? options.querySelectorAll('input') : [];
+    
+    // Asegúrate de que hay suficientes inputs para evitar errores
+    const  intAbinario= funcionBinariollamada.length > 0 ? funcionBinariollamada[0].value : "text";
+        const  funcionBinariollamadaVariable= funcionBinariollamada.length > 1 ? funcionBinariollamada[1].value : "text";
+
+    // Concatena el código usando template strings
+    code += `
+       string ${funcionBinariollamadaVariable} = convertirABinario(${intAbinario});
+
+    \n`;
+    break;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
         
         
@@ -494,7 +572,7 @@ function generateBlockCode(container, indentLevel) {
  const inputAmensaje = inputsInputA.length > 2 ? inputsInputA[2].value : "mensaje";
        
     // Concatena el código usando template strings
-    code += `${inputAtipoVariable} ${inputAnombreVariable};\ncout << " ${inputAmensaje}: ";\n`;
+    code += `${inputAtipoVariable} ${inputAnombreVariable};\n cout << " ${inputAmensaje}: ";\n`;
     break;
  
  
