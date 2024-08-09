@@ -25,10 +25,11 @@
     margin-bottom: 20px;
   }
   .block-container, .workspace-container, .compiler-container {
-    width: 31%;
+    width: 50%;
     background-color: rgba(255, 255, 255, 0.8);
     border-radius: 8px;
     padding: 20px;
+    overflow: visible;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
   }
   .code-container {
@@ -162,9 +163,23 @@
    
          <div class="block block-math" draggable="true" ondragstart="drag(event)" id="buscarCadena">buscar cadena</div>
       
+   
       
-      
-      
+   
+   
+          <div class="block block-math" draggable="true" ondragstart="drag(event)" id="inputA">input usuario</div>      
+        
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
       
     </div>
     
@@ -247,6 +262,16 @@ function createBlockElement(data) {
       break;
       
       
+   
+     case 'inputA':
+      optionsDiv.innerHTML = '<input type="text" placeholder="tipo variable int,float,boolean,string,char"><input type="text" placeholder="variable nombre"><input type="text" placeholder="texto de mensaje">';
+      break;  
+   
+   
+   
+   
+   
+   
                 
               
       
@@ -455,6 +480,31 @@ function generateBlockCode(container, indentLevel) {
         
         
         
+ 
+ 
+ 
+ 
+         case 'inputA':
+    // Usa querySelectorAll para seleccionar múltiples inputs
+    const inputsInputA = options ? options.querySelectorAll('input') : [];
+    
+    // Asegúrate de que hay suficientes inputs para evitar errores
+    const inputAtipoVariable = inputsInputA.length > 0 ? inputsInputA[0].value : "text";
+    const inputAnombreVariable = inputsInputA.length > 1 ? inputsInputA[1].value : "variable";
+ const inputAmensaje = inputsInputA.length > 2 ? inputsInputA[2].value : "mensaje";
+       
+    // Concatena el código usando template strings
+    code += `${inputAtipoVariable} ${inputAnombreVariable};\ncout << " ${inputAmensaje}: ";\n`;
+    break;
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
         
         
         
